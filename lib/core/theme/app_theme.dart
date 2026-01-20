@@ -16,6 +16,7 @@ class AppTheme {
         background: AppColors.voidBg,
         onPrimary: AppColors.voidBg,
         onSurface: AppColors.titanium,
+        outline: AppColors.borderSubtle,
       ),
 
       textTheme: TextTheme(
@@ -23,13 +24,18 @@ class AppTheme {
           fontSize: 32,
           fontWeight: FontWeight.w900,
           color: AppColors.titanium,
-          letterSpacing: -0.02,
+          letterSpacing: -0.04,
         ),
         headlineMedium: GoogleFonts.spaceGrotesk(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: AppColors.titanium,
-          letterSpacing: 0.05,
+          letterSpacing: -0.02,
+        ),
+        titleLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: AppColors.titanium,
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
@@ -58,12 +64,18 @@ class AppTheme {
       ),
 
       cardTheme: CardTheme(
-        color: AppColors.surface,
+        color: AppColors.surface.withOpacity(0.95),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
-          side: const BorderSide(color: AppColors.borderSubtle, width: 1),
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Colors.white.withOpacity(0.08), width: 1),
         ),
         elevation: 0,
+      ),
+
+      dividerTheme: const DividerThemeData(
+        color: AppColors.borderSubtle,
+        thickness: 1,
+        space: 1,
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -71,15 +83,44 @@ class AppTheme {
           backgroundColor: AppColors.electric,
           foregroundColor: AppColors.voidBg,
           textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.1,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.titanium,
+          side: const BorderSide(color: AppColors.borderSubtle),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surface,
+        hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.electric, width: 1.5),
         ),
       ),
     );
