@@ -24,21 +24,23 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: color ?? AppColors.surface.withOpacity(opacity),
-            borderRadius: borderRadius ?? BorderRadius.circular(24),
-            border: border ?? Border.all(
-              color: Colors.white.withOpacity(0.08),
-              width: 1,
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: Container(
+            padding: padding,
+            decoration: BoxDecoration(
+              color: color ?? AppColors.surface.withOpacity(opacity),
+              borderRadius: borderRadius ?? BorderRadius.circular(24),
+              border: border ?? Border.all(
+                color: Colors.white.withOpacity(0.08),
+                width: 1,
+              ),
             ),
+            child: child,
           ),
-          child: child,
         ),
       ),
     );

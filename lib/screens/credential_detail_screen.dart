@@ -281,6 +281,57 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
     );
   }
 
+  Widget _buildTOTPCard() {
+    return GlassCard(
+      opacity: 0.3,
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '482 193',
+                style: GoogleFonts.spaceMono(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.electric,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'EXPIRES IN 24S',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.gunmetal,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 44, height: 44,
+                child: CircularProgressIndicator(
+                  value: 0.8,
+                  strokeWidth: 3,
+                  backgroundColor: AppColors.surface2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.electric),
+                ),
+              ),
+              const Icon(LucideIcons.clock, size: 16, color: AppColors.electric),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildActionBtn(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
     return GestureDetector(
       onTap: onTap,
