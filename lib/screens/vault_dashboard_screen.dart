@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../core/theme/colors.dart';
+import 'credential_detail_screen.dart';
 
 class VaultDashboardScreen extends StatefulWidget {
   const VaultDashboardScreen({super.key});
@@ -53,7 +55,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                      onPressed: () {}, // Add Action
                      icon: Container(
                        padding: const EdgeInsets.all(8),
-                       decoration: BoxDecoration(
+                       decoration: const BoxDecoration(
                          color: AppColors.electricDim,
                          shape: BoxShape.circle,
                        ),
@@ -123,7 +125,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                     name: 'Google',
                     username: 'nathfavour@gmail.com',
                     color: Colors.blue,
-                    icon: LucideIcons.globe, // Using globe for Google for now
+                    icon: LucideIcons.globe,
                   ),
 
                   const SizedBox(height: 32),
@@ -192,7 +194,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
       style: GoogleFonts.spaceMono(
         fontSize: 10,
         fontWeight: FontWeight.w700,
-        color: AppColors.primary,
+        color: AppColors.electric,
         letterSpacing: 1.5,
       ),
     );
@@ -204,62 +206,79 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
     Color? color,
     IconData? icon,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.borderSubtle),
-            ),
-            child: Icon(
-              icon ?? LucideIcons.key, 
-              color: color ?? AppColors.titanium,
-              size: 20,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CredentialDetailScreen(
+              credential: {
+                'name': name,
+                'username': username,
+                'color': color,
+                'icon': icon,
+              },
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.titanium,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderSubtle),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.borderSubtle),
+              ),
+              child: Icon(
+                icon ?? LucideIcons.key, 
+                color: color ?? AppColors.titanium,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppColors.titanium,
+                    ),
                   ),
-                ),
-                Text(
-                  username,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.gunmetal,
+                  Text(
+                    username,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.gunmetal,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(LucideIcons.copy, size: 16, color: AppColors.gunmetal),
-            tooltip: 'Copy Password',
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0);
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(LucideIcons.copy, size: 16, color: AppColors.gunmetal),
+              tooltip: 'Copy Password',
+            ),
+          ],
+        ),
+      ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0),
+    );
   }
 }
