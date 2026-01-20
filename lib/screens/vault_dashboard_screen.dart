@@ -1,0 +1,265 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../core/theme/colors.dart';
+
+class VaultDashboardScreen extends StatefulWidget {
+  const VaultDashboardScreen({super.key});
+
+  @override
+  State<VaultDashboardScreen> createState() => _VaultDashboardScreenState();
+}
+
+class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
+  String _selectedFolder = 'All'; // 'All', 'Finance', 'Social', etc.
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.voidBg,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Vault',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.titanium,
+                          height: 1.0,
+                        ),
+                      ),
+                      Text(
+                        '142 items secured',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppColors.gunmetal,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                   ),
+                   IconButton(
+                     onPressed: () {}, // Add Action
+                     icon: Container(
+                       padding: const EdgeInsets.all(8),
+                       decoration: BoxDecoration(
+                         color: AppColors.electricDim,
+                         shape: BoxShape.circle,
+                       ),
+                       child: const Icon(LucideIcons.plus, color: AppColors.electric, size: 20),
+                     ),
+                   ),
+                ],
+              ),
+            ),
+
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.borderSubtle),
+                ),
+                child: TextField(
+                  style: GoogleFonts.inter(color: AppColors.titanium),
+                  decoration: InputDecoration(
+                    hintText: 'Search vault...',
+                    hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+                    prefixIcon: const Icon(LucideIcons.search, color: AppColors.gunmetal),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Folders Filter
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  _buildFolderChip('All', true),
+                  _buildFolderChip('Social', false),
+                  _buildFolderChip('Finance', false),
+                  _buildFolderChip('Work', false),
+                  _buildFolderChip('Utilities', false),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Content List
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                children: [
+                  _buildSectionTitle('RECENT ITEMS'),
+                  const SizedBox(height: 12),
+                  // Mock Recent Items
+                  _buildCredentialItem(
+                    name: 'GitHub',
+                    username: 'nathfavour',
+                    color: Colors.white,
+                    icon: LucideIcons.github,
+                  ),
+                  _buildCredentialItem(
+                    name: 'Google',
+                    username: 'nathfavour@gmail.com',
+                    color: Colors.blue,
+                    icon: LucideIcons.globe, // Using globe for Google for now
+                  ),
+
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('ALL ITEMS'),
+                  const SizedBox(height: 12),
+                  // Mock All Items
+                  _buildCredentialItem(name: 'Netflix', username: 'movie_fan', color: Colors.red),
+                  _buildCredentialItem(name: 'Spotify', username: 'music_lover', color: Colors.green),
+                  _buildCredentialItem(name: 'Amazon', username: 'primer', color: Colors.orange),
+                  _buildCredentialItem(name: 'Slack', username: 'dev_team', color: Colors.purple),
+                  _buildCredentialItem(name: 'DigitalOcean', username: 'cloud_master', color: Colors.blue),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFolderChip(String label, bool isSelected) {
+    return Container(
+      margin: const EdgeInsets.only(right: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => setState(() => _selectedFolder = label),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.surface2 : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? AppColors.electric.withOpacity(0.3) : AppColors.borderSubtle,
+              ),
+            ),
+            child: Row(
+              children: [
+                if (label != 'All') ...[
+                  Icon(LucideIcons.folder, 
+                    size: 14, 
+                    color: isSelected ? AppColors.electric : AppColors.gunmetal
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? AppColors.titanium : AppColors.gunmetal,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.spaceMono(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: AppColors.primary,
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildCredentialItem({
+    required String name, 
+    required String username, 
+    Color? color,
+    IconData? icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.borderSubtle),
+            ),
+            child: Icon(
+              icon ?? LucideIcons.key, 
+              color: color ?? AppColors.titanium,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.titanium,
+                  ),
+                ),
+                Text(
+                  username,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppColors.gunmetal,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(LucideIcons.copy, size: 16, color: AppColors.gunmetal),
+            tooltip: 'Copy Password',
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0);
+  }
+}
