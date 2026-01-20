@@ -12,7 +12,8 @@ import 'password_generator_screen.dart';
 import '../core/theme/glass_route.dart';
 
 class VaultDashboardScreen extends StatefulWidget {
-  const VaultDashboardScreen({super.key});
+  final bool isDesktop;
+  const VaultDashboardScreen({super.key, this.isDesktop = false});
 
   @override
   State<VaultDashboardScreen> createState() => _VaultDashboardScreenState();
@@ -85,20 +86,26 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                        ),
                        Row(
                          children: [
+                           if (widget.isDesktop) ...[
+                             _DesktopHeaderAction(LucideIcons.plus, () {
+                               // Add new credential logic
+                             }, isPrimary: true),
+                             const SizedBox(width: 8),
+                           ],
                            Container(
                              decoration: BoxDecoration(
-                               color: AppColors.surface2,
-                               borderRadius: BorderRadius.circular(12),
-                               border: Border.all(color: AppColors.borderSubtle),
+                                color: AppColors.surface2,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.borderSubtle),
                              ),
                              child: IconButton(
-                               onPressed: () {
-                                 Navigator.push(
-                                   context,
-                                   GlassRoute(page: const PasswordGeneratorScreen()),
-                                 );
-                               },
-                               icon: const Icon(LucideIcons.shieldAlert, color: AppColors.electric, size: 20),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    GlassRoute(page: const PasswordGeneratorScreen()),
+                                  );
+                                },
+                                icon: const Icon(LucideIcons.shieldAlert, color: AppColors.electric, size: 20),
                              ),
                            ),
                            const SizedBox(width: 12),
@@ -138,22 +145,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                     children: [
                       // Search Bar
-                      GlassCard(
-                        opacity: 0.4,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TextField(
-                          style: GoogleFonts.inter(color: AppColors.titanium),
-                          decoration: InputDecoration(
-                            hintText: 'Search secure vault...',
-                            hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
-                            prefixIcon: const Icon(LucideIcons.search, color: AppColors.gunmetal, size: 18),
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
+                      _buildSearchBar(),
 
                       const SizedBox(height: 24),
 
@@ -173,28 +165,30 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
 
                       const SizedBox(height: 32),
 
-                      _buildSectionTitle('RECENTLY ACCESSED'),
-                      const SizedBox(height: 16),
-                      // Mock Recent Items
-                      _buildCredentialItem(
-                        name: 'GitHub Secure',
-                        username: 'nathfavour',
-                        icon: LucideIcons.github,
-                      ),
-                      _buildCredentialItem(
-                        name: 'Base Wallet',
-                        username: '0x71...3a2f',
-                        icon: LucideIcons.wallet,
-                      ),
+                      if (widget.isDesktop) 
+                        _buildDesktopCredentialsGrid()
+                      else ...[
+                        _buildSectionTitle('RECENTLY ACCESSED'),
+                        const SizedBox(height: 16),
+                        _buildCredentialItem(
+                          name: 'GitHub Secure',
+                          username: 'nathfavour',
+                          icon: LucideIcons.github,
+                        ),
+                        _buildCredentialItem(
+                          name: 'Base Wallet',
+                          username: '0x71...3a2f',
+                          icon: LucideIcons.wallet,
+                        ),
 
-                      const SizedBox(height: 32),
-                      _buildSectionTitle('ALL CREDENTIALS'),
-                      const SizedBox(height: 16),
-                      // Mock All Items
-                      _buildCredentialItem(name: 'Netflix', username: 'premium_user'),
-                      _buildCredentialItem(name: 'Spotify', username: 'music_sync'),
-                      _buildCredentialItem(name: 'Stripe Dashboard', username: 'admin_fleet'),
-                      _buildCredentialItem(name: 'Appwrite Cloud', username: 'dev_root'),
+                        const SizedBox(height: 32),
+                        _buildSectionTitle('ALL CREDENTIALS'),
+                        const SizedBox(height: 16),
+                        _buildCredentialItem(name: 'Netflix', username: 'premium_user'),
+                        _buildCredentialItem(name: 'Spotify', username: 'music_sync'),
+                        _buildCredentialItem(name: 'Stripe Dashboard', username: 'admin_fleet'),
+                        _buildCredentialItem(name: 'Appwrite Cloud', username: 'dev_root'),
+                      ],
                     ],
                   ),
                 ),
@@ -203,8 +197,89 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
           ),
         ],
       ),
+      floatingActionButton: widget.isDesktop ? null : _buildMobileFAB(),
     );
   }
+
+  Widget _buildSearchBar() {
+    return GlassCard(
+      opacity: 0.4,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextField(
+        style: GoogleFonts.inter(color: AppColors.titanium),
+        decoration: InputDecoration(
+          hintText: 'Search secure vault...',
+          hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+          prefixIcon: const Icon(LucideIcons.search, color: AppColors.gunmetal, size: 18),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopCredentialsGrid() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('ALL VAULTS'),
+        const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 2.2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: 9,
+          itemBuilder: (context, index) {
+             return _buildCredentialItem(
+               name: 'Vault Item ${index + 1}',
+               username: 'user_${index + 1}@whisperr',
+             );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileFAB() {
+    return FloatingActionButton(
+      onPressed: () {},
+      backgroundColor: AppColors.electric,
+      child: const Icon(LucideIcons.plus, color: AppColors.voidBg),
+    );
+  }
+}
+
+class _DesktopHeaderAction extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isPrimary;
+
+  const _DesktopHeaderAction(this.icon, this.onTap, {this.isPrimary = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36, height: 36,
+        decoration: BoxDecoration(
+          color: isPrimary ? AppColors.electric : AppColors.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: isPrimary ? AppColors.electric : AppColors.borderSubtle),
+        ),
+        child: Icon(icon, size: 16, color: isPrimary ? AppColors.voidBg : AppColors.electric),
+      ),
+    );
+  }
+}
+
 
   Widget _buildFolderChip(String label, bool isSelected) {
     return Container(
