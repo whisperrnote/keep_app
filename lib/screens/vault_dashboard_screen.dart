@@ -7,6 +7,10 @@ import 'credential_detail_screen.dart';
 
 import '../widgets/glass_card.dart';
 
+import 'settings_screen.dart';
+
+import 'password_generator_screen.dart';
+
 class VaultDashboardScreen extends StatefulWidget {
   const VaultDashboardScreen({super.key});
 
@@ -79,16 +83,51 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                           ),
                         ],
                        ),
-                       Container(
-                         decoration: BoxDecoration(
-                           color: AppColors.surface2,
-                           borderRadius: BorderRadius.circular(12),
-                           border: Border.all(color: AppColors.borderSubtle),
-                         ),
-                         child: IconButton(
-                           onPressed: () {},
-                           icon: const Icon(LucideIcons.plus, color: AppColors.electric, size: 20),
-                         ),
+                       Row(
+                         children: [
+                           Container(
+                             decoration: BoxDecoration(
+                               color: AppColors.surface2,
+                               borderRadius: BorderRadius.circular(12),
+                               border: Border.all(color: AppColors.borderSubtle),
+                             ),
+                             child: IconButton(
+                               onPressed: () {
+                                 Navigator.push(
+                                   context,
+                                   MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                                 );
+                               },
+                               icon: const Icon(LucideIcons.shieldAlert, color: AppColors.electric, size: 20),
+                             ),
+                           ),
+                           const SizedBox(width: 12),
+                           GestureDetector(
+                             onTap: () {
+                               Navigator.push(
+                                 context,
+                                 MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                               );
+                             },
+                             child: Container(
+                               width: 40, height: 40,
+                               decoration: BoxDecoration(
+                                 color: AppColors.electric,
+                                 borderRadius: BorderRadius.circular(12),
+                                 border: Border.all(color: AppColors.voidBg, width: 2),
+                               ),
+                               child: Center(
+                                 child: Text(
+                                   'U',
+                                   style: GoogleFonts.spaceGrotesk(
+                                     fontWeight: FontWeight.bold,
+                                     color: AppColors.voidBg,
+                                   ),
+                                 ),
+                               ),
+                             ),
+                           ),
+                         ],
                        ),
                     ],
                   ),
