@@ -5,6 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../core/theme/colors.dart';
 import 'credential_detail_screen.dart';
 
+import '../widgets/glass_card.dart';
+
 class VaultDashboardScreen extends StatefulWidget {
   const VaultDashboardScreen({super.key});
 
@@ -19,129 +21,148 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.voidBg,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: [
+          // Background Gradient
+          Positioned(
+            top: -150,
+            left: -150,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.electric.withOpacity(0.05),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                GlassCard(
+                  borderRadius: BorderRadius.zero,
+                  opacity: 0.8,
+                  border: const Border(bottom: BorderSide(color: AppColors.borderSubtle)),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Vault',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.titanium,
-                          height: 1.0,
-                        ),
-                      ),
-                      Text(
-                        '142 items secured',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.gunmetal,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                   ),
-                   IconButton(
-                     onPressed: () {}, // Add Action
-                     icon: Container(
-                       padding: const EdgeInsets.all(8),
-                       decoration: const BoxDecoration(
-                         color: AppColors.electricDim,
-                         shape: BoxShape.circle,
+                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'VAULT',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.electric,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Digital Identity',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.titanium,
+                              height: 1.0,
+                            ),
+                          ),
+                        ],
                        ),
-                       child: const Icon(LucideIcons.plus, color: AppColors.electric, size: 20),
-                     ),
-                   ),
-                ],
-              ),
-            ),
-
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.borderSubtle),
-                ),
-                child: TextField(
-                  style: GoogleFonts.inter(color: AppColors.titanium),
-                  decoration: InputDecoration(
-                    hintText: 'Search vault...',
-                    hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
-                    prefixIcon: const Icon(LucideIcons.search, color: AppColors.gunmetal),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                       Container(
+                         decoration: BoxDecoration(
+                           color: AppColors.surface2,
+                           borderRadius: BorderRadius.circular(12),
+                           border: Border.all(color: AppColors.borderSubtle),
+                         ),
+                         child: IconButton(
+                           onPressed: () {},
+                           icon: const Icon(LucideIcons.plus, color: AppColors.electric, size: 20),
+                         ),
+                       ),
+                    ],
                   ),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 24),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    children: [
+                      // Search Bar
+                      GlassCard(
+                        opacity: 0.4,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextField(
+                          style: GoogleFonts.inter(color: AppColors.titanium),
+                          decoration: InputDecoration(
+                            hintText: 'Search secure vault...',
+                            hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+                            prefixIcon: const Icon(LucideIcons.search, color: AppColors.gunmetal, size: 18),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                        ),
+                      ),
 
-            // Folders Filter
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  _buildFolderChip('All', true),
-                  _buildFolderChip('Social', false),
-                  _buildFolderChip('Finance', false),
-                  _buildFolderChip('Work', false),
-                  _buildFolderChip('Utilities', false),
-                ],
-              ),
-            ),
+                      const SizedBox(height: 24),
 
-            const SizedBox(height: 32),
+                      // Folders Filter
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFolderChip('All', true),
+                            _buildFolderChip('Finance', false),
+                            _buildFolderChip('Social', false),
+                            _buildFolderChip('Work', false),
+                            _buildFolderChip('Keys', false),
+                          ],
+                        ),
+                      ),
 
-            // Content List
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                children: [
-                  _buildSectionTitle('RECENT ITEMS'),
-                  const SizedBox(height: 12),
-                  // Mock Recent Items
-                  _buildCredentialItem(
-                    name: 'GitHub',
-                    username: 'nathfavour',
-                    color: Colors.white,
-                    icon: LucideIcons.github,
+                      const SizedBox(height: 32),
+
+                      _buildSectionTitle('RECENTLY ACCESSED'),
+                      const SizedBox(height: 16),
+                      // Mock Recent Items
+                      _buildCredentialItem(
+                        name: 'GitHub Secure',
+                        username: 'nathfavour',
+                        icon: LucideIcons.github,
+                      ),
+                      _buildCredentialItem(
+                        name: 'Base Wallet',
+                        username: '0x71...3a2f',
+                        icon: LucideIcons.wallet,
+                      ),
+
+                      const SizedBox(height: 32),
+                      _buildSectionTitle('ALL CREDENTIALS'),
+                      const SizedBox(height: 16),
+                      // Mock All Items
+                      _buildCredentialItem(name: 'Netflix', username: 'premium_user'),
+                      _buildCredentialItem(name: 'Spotify', username: 'music_sync'),
+                      _buildCredentialItem(name: 'Stripe Dashboard', username: 'admin_fleet'),
+                      _buildCredentialItem(name: 'Appwrite Cloud', username: 'dev_root'),
+                    ],
                   ),
-                  _buildCredentialItem(
-                    name: 'Google',
-                    username: 'nathfavour@gmail.com',
-                    color: Colors.blue,
-                    icon: LucideIcons.globe,
-                  ),
-
-                  const SizedBox(height: 32),
-                  _buildSectionTitle('ALL ITEMS'),
-                  const SizedBox(height: 12),
-                  // Mock All Items
-                  _buildCredentialItem(name: 'Netflix', username: 'movie_fan', color: Colors.red),
-                  _buildCredentialItem(name: 'Spotify', username: 'music_lover', color: Colors.green),
-                  _buildCredentialItem(name: 'Amazon', username: 'primer', color: Colors.orange),
-                  _buildCredentialItem(name: 'Slack', username: 'dev_team', color: Colors.purple),
-                  _buildCredentialItem(name: 'DigitalOcean', username: 'cloud_master', color: Colors.blue),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -203,82 +224,76 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
   Widget _buildCredentialItem({
     required String name, 
     required String username, 
-    Color? color,
     IconData? icon,
   }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CredentialDetailScreen(
-              credential: {
-                'name': name,
-                'username': username,
-                'color': color,
-                'icon': icon,
-              },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CredentialDetailScreen(
+                credential: {
+                  'name': name,
+                  'username': username,
+                  'icon': icon,
+                },
+              ),
             ),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface.withOpacity(0.4),
+          );
+        },
+        child: GlassCard(
+          opacity: 0.3,
+          padding: const EdgeInsets.all(16),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.borderSubtle),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.borderSubtle),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.surface2,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.borderSubtle),
+                ),
+                child: Icon(
+                  icon ?? LucideIcons.key, 
+                  color: AppColors.electric,
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                icon ?? LucideIcons.key, 
-                color: color ?? AppColors.titanium,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppColors.titanium,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: AppColors.titanium,
+                      ),
                     ),
-                  ),
-                  Text(
-                    username,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: AppColors.gunmetal,
+                    const SizedBox(height: 2),
+                    Text(
+                      username,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppColors.gunmetal,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(LucideIcons.copy, size: 16, color: AppColors.gunmetal),
-              tooltip: 'Copy Password',
-            ),
-          ],
-        ),
-      ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0),
+              Icon(LucideIcons.chevronRight, size: 16, color: AppColors.gunmetal.withOpacity(0.5)),
+            ],
+          ),
+        ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.05, end: 0),
+      ),
     );
   }
 }
