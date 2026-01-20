@@ -8,8 +8,8 @@ import 'credential_detail_screen.dart';
 import '../widgets/glass_card.dart';
 
 import 'settings_screen.dart';
-
 import 'password_generator_screen.dart';
+import '../core/theme/glass_route.dart';
 
 class VaultDashboardScreen extends StatefulWidget {
   const VaultDashboardScreen({super.key});
@@ -95,7 +95,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                                onPressed: () {
                                  Navigator.push(
                                    context,
-                                   MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                                   GlassRoute(page: const PasswordGeneratorScreen()),
                                  );
                                },
                                icon: const Icon(LucideIcons.shieldAlert, color: AppColors.electric, size: 20),
@@ -106,7 +106,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                              onTap: () {
                                Navigator.push(
                                  context,
-                                 MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                                 GlassRoute(page: const SettingsScreen()),
                                );
                              },
                              child: Container(
@@ -271,8 +271,8 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => CredentialDetailScreen(
+            GlassRoute(
+              page: CredentialDetailScreen(
                 credential: {
                   'name': name,
                   'username': username,
