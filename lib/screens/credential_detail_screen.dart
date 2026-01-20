@@ -168,6 +168,11 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
 
                         const SizedBox(height: 24),
 
+                        _buildLabel('TWO-FACTOR AUTHENTICATION'),
+                        _buildTOTPCard(),
+
+                        const SizedBox(height: 24),
+
                         _buildLabel('ANNOTATIONS'),
                         _buildField(
                           value: 'Use this for the main developer account. Ensure 2FA is active.',
