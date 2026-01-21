@@ -11,6 +11,7 @@ import '../core/models/credential_model.dart';
 import '../widgets/glass_card.dart';
 import 'settings_screen.dart';
 import 'password_generator_screen.dart';
+import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
 
 class VaultDashboardScreen extends StatefulWidget {
@@ -126,8 +127,14 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                       Row(
                         children: [
                           if (widget.isDesktop) ...[
-                            _DesktopHeaderAction(LucideIcons.plus, () {
-                              // Add new credential logic
+                            _DesktopHeaderAction(LucideIcons.plus, () async {
+                              await Navigator.push(
+                                context,
+                                GlassRoute(
+                                  page: const CreateCredentialScreen(),
+                                ),
+                              );
+                              _fetchCredentials();
                             }, isPrimary: true),
                             const SizedBox(width: 8),
                           ],
@@ -337,7 +344,13 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
 
   Widget _buildMobileFAB() {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          GlassRoute(page: const CreateCredentialScreen()),
+        );
+        _fetchCredentials();
+      },
       backgroundColor: AppColors.electric,
       child: const Icon(LucideIcons.plus, color: AppColors.voidBg),
     );
