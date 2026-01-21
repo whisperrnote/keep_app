@@ -2,7 +2,7 @@ class Credential {
   final String id;
   final String title;
   final String username;
-  final String password;
+  String password;
   final String? url;
   final String? notes;
   final String category; // social, work, finance, etc.
@@ -33,8 +33,12 @@ class Credential {
       notes: json['notes'],
       category: json['category'] ?? 'general',
       userId: json['userId'] ?? '',
-      createdAt: DateTime.parse(json['\$createdAt']),
-      updatedAt: DateTime.parse(json['\$updatedAt']),
+      createdAt: DateTime.parse(
+        json['\$createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['\$updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 

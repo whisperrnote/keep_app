@@ -14,6 +14,9 @@ import 'password_generator_screen.dart';
 import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
 
+import '../core/services/vault_provider.dart';
+import 'vault_lock_screen.dart';
+
 class VaultDashboardScreen extends StatefulWidget {
   final bool isDesktop;
   const VaultDashboardScreen({super.key, this.isDesktop = false});
@@ -61,6 +64,15 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final vaultProvider = Provider.of<VaultProvider>(context);
+
+    if (vaultProvider.isLocked) {
+      return VaultLockScreen(
+        onUnlocked: () {
+          _fetchCredentials();
+        },
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.voidBg,

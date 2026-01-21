@@ -4,6 +4,7 @@ import 'core/theme/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/services/vault_provider.dart';
 
 void main() {
   runApp(const WhisperrKeepApp());
@@ -14,8 +15,11 @@ class WhisperrKeepApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => VaultProvider()),
+      ],
       child: MaterialApp(
         title: 'WhisperrKeep',
         debugShowCheckedModeBanner: false,
