@@ -11,7 +11,7 @@ on:
         description: 'Build Android APK'
         required: true
         type: boolean
-        default: true
+        default: false
       build_ios:
         description: 'Build iOS'
         required: true
@@ -21,7 +21,7 @@ on:
         description: 'Build Web'
         required: true
         type: boolean
-        default: true
+        default: false
       build_windows:
         description: 'Build Windows'
         required: true
@@ -40,8 +40,8 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ (inputs.build_macos || inputs.build_ios) && 'macos-latest' || (inputs.build_windows && 'windows-latest') || 'ubuntu-latest' }}
-    
+    runs-on: ubuntu-latest
+    if: false # Explicitly disabled: project not ready for release builds
     steps:
       - uses: actions/checkout@v3
       
