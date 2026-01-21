@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -13,6 +15,7 @@ import 'settings_screen.dart';
 import 'password_generator_screen.dart';
 import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
+import 'autofill_overlay.dart';
 
 import '../core/services/vault_provider.dart';
 import '../core/services/autofill/autofill_manager.dart';
@@ -56,10 +59,12 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
         final credentials = await _vaultService.listCredentials(
           authProvider.user!.$id,
         );
+        final manager = AutofillManager();
         setState(() {
           _credentials = credentials;
           _isLoading = false;
         });
+        manager.updateCredentials(credentials);
       } catch (e) {
         setState(() => _isLoading = false);
       }
@@ -229,117 +234,137 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                     color: AppColors.electric,
                     backgroundColor: AppColors.surface,
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 24,
-                      ),
-                      children: [
-                        // Search Bar
-                        _buildSearchBar(),
-
-                        const SizedBox(height: 24),
-
-                        // Folders Filter
-                        _buildPasswordHealthCard(),
-
-                        const SizedBox(height: 24),
-
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              _buildFolderChip('All', _selectedFolder == 'All'),
-                              _buildFolderChip(
-                                'Finance',
-                                _selectedFolder == 'Finance',
-                              ),
-                              _buildFolderChip(
-                                'Social',
-                                _selectedFolder == 'Social',
-                              ),
-                              _buildFolderChip(
-                                'Work',
-                                _selectedFolder == 'Work',
-                              ),
-                              _buildFolderChip(
-                                'Keys',
-                                _selectedFolder == 'Keys',
-                              ),
-                            ],
-                          ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 24,
                         ),
+                        children: [
+                          // Search Bar
+                          _buildSearchBar(
+                            onAutofillTap: () => AutofillManager().openOverlay(),
+                          ),
 
-                        const SizedBox(height: 32),
+                          const SizedBox(height: 24),
 
-                        if (_isLoading)
-                          const Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.electric,
-                            ),
-                          )
-                        else if (_filteredCredentials.isEmpty)
-                          Center(
-                            child: Column(
+                          // Folders Filter
+                          _buildPasswordHealthCard(),
+
+                          const SizedBox(height: 24),
+
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
                               children: [
-                                const Icon(
-                                  LucideIcons.shieldOff,
-                                  size: 48,
-                                  color: AppColors.gunmetal,
+                                _buildFolderChip('All', _selectedFolder == 'All'),
+                                _buildFolderChip(
+                                  'Finance',
+                                  _selectedFolder == 'Finance',
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No credentials found.',
-                                  style: GoogleFonts.inter(
-                                    color: AppColors.gunmetal,
-                                  ),
+                                _buildFolderChip(
+                                  'Social',
+                                  _selectedFolder == 'Social',
+                                ),
+                                _buildFolderChip(
+                                  'Work',
+                                  _selectedFolder == 'Work',
+                                ),
+                                _buildFolderChip(
+                                  'Keys',
+                                  _selectedFolder == 'Keys',
                                 ),
                               ],
                             ),
-                          )
-                        else if (widget.isDesktop)
-                          _buildDesktopCredentialsGrid()
-                        else ...[
-                          _buildSectionTitle('ALL CREDENTIALS'),
-                          const SizedBox(height: 16),
-                          ..._filteredCredentials.map(
-                            (c) => _buildCredentialItem(credential: c),
                           ),
+
+                          const SizedBox(height: 32),
+
+                          if (_isLoading)
+                            const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.electric,
+                              ),
+                            )
+                          else if (_filteredCredentials.isEmpty)
+                            Center(
+                              child: Column(
+                                children: [
+                                  const Icon(
+                                    LucideIcons.shieldOff,
+                                    size: 48,
+                                    color: AppColors.gunmetal,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No credentials found.',
+                                    style: GoogleFonts.inter(
+                                      color: AppColors.gunmetal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (widget.isDesktop)
+                            _buildDesktopCredentialsGrid()
+                          else ...[
+                            _buildSectionTitle('ALL CREDENTIALS'),
+                            const SizedBox(height: 16),
+                            ..._filteredCredentials.map(
+                              (c) => _buildCredentialItem(credential: c),
+                            ),
+                          ],
                         ],
-                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          const AutofillOverlay(),
         ],
       ),
       floatingActionButton: widget.isDesktop ? null : _buildMobileFAB(),
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar({VoidCallback? onAutofillTap}) {
     return GlassCard(
       opacity: 0.4,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TextField(
-        style: GoogleFonts.inter(color: AppColors.titanium),
-        onChanged: (value) {
-          // Implement search logic if needed
-        },
-        decoration: InputDecoration(
-          hintText: 'Search secure vault...',
-          hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
-          prefixIcon: const Icon(
+      child: Row(
+        children: [
+          const Icon(
             LucideIcons.search,
             color: AppColors.gunmetal,
             size: 18,
           ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              style: GoogleFonts.inter(color: AppColors.titanium),
+              onChanged: (value) {
+                // Implement search logic if needed
+              },
+              decoration: InputDecoration(
+                hintText: 'Search secure vault...',
+                hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          ),
+          if (onAutofillTap != null)
+            IconButton(
+              onPressed: onAutofillTap,
+              icon: const Icon(
+                LucideIcons.zap,
+                color: AppColors.electric,
+                size: 20,
+              ),
+              padding: EdgeInsets.zero,
+            ),
+        ],
       ),
     );
   }

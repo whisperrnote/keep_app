@@ -7,6 +7,7 @@ import 'core/providers/auth_provider.dart';
 import 'core/services/vault_provider.dart';
 
 import 'core/services/autofill/desktop_autofill_service.dart';
+import 'core/services/autofill/autofill_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 
@@ -56,6 +57,7 @@ class _WhisperrKeepAppState extends State<WhisperrKeepApp>
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => VaultProvider()),
+        ChangeNotifierProvider(create: (_) => AutofillManager()),
       ],
       child: MaterialApp(
         title: 'WhisperrKeep',

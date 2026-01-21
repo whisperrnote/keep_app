@@ -4,6 +4,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:flutter/services.dart';
+import 'autofill_manager.dart';
 
 class DesktopAutofillService {
   static final DesktopAutofillService _instance =
@@ -71,11 +72,12 @@ class DesktopAutofillService {
     );
   }
 
-  void _invokeOverlay() async {
-    await windowManager.setAlwaysOnTop(true);
-    await windowManager.show();
-    await windowManager.focus();
-  }
+void _invokeOverlay() async {
+  await windowManager.setAlwaysOnTop(true);
+  await windowManager.show();
+  await windowManager.focus();
+  AutofillManager().openOverlay();
+}
 
   void _lockVault() {
     // Global VaultProvider lock logic

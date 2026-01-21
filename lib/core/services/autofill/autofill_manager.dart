@@ -8,7 +8,7 @@ class AutofillManager extends ChangeNotifier {
   static final AutofillManager _instance = AutofillManager._internal();
   factory AutofillManager() => _instance;
 
-  final AutofillTransport _transport = AutofillTransport();
+  final AutofillTransport _transport = AutofillTransport.instance;
 
   bool _isActive = false;
   String _query = '';
@@ -54,7 +54,7 @@ class AutofillManager extends ChangeNotifier {
     if (credential.password.isEmpty) return;
     await _transport.performAutofill(credential.password);
     _lastAutofilled = credential;
-    notifyListeners();
+    closeOverlay();
   }
 
   Credential? get lastAutofilled => _lastAutofilled;
