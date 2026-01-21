@@ -10,10 +10,7 @@ import '../widgets/glass_card.dart';
 class CredentialDetailScreen extends StatefulWidget {
   final Map<String, dynamic> credential;
 
-  const CredentialDetailScreen({
-    super.key,
-    required this.credential,
-  });
+  const CredentialDetailScreen({super.key, required this.credential});
 
   @override
   State<CredentialDetailScreen> createState() => _CredentialDetailScreenState();
@@ -22,6 +19,12 @@ class CredentialDetailScreen extends StatefulWidget {
 class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
   bool _showPassword = false;
   String? _copiedField;
+
+  String get _password => widget.credential['password'] ?? 'No Password';
+  String get _notes => widget.credential['notes'] ?? '';
+  String get _name => widget.credential['name'] ?? 'Untitled';
+  String get _username => widget.credential['username'] ?? 'No Username';
+  String get _url => widget.credential['url'] ?? '';
 
   Future<void> _handleCopy(String value, String field) async {
     await Clipboard.setData(ClipboardData(text: value));
@@ -64,12 +67,21 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                 GlassCard(
                   borderRadius: BorderRadius.zero,
                   opacity: 0.8,
-                  border: const Border(bottom: BorderSide(color: AppColors.borderSubtle)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: const Border(
+                    bottom: BorderSide(color: AppColors.borderSubtle),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(LucideIcons.arrowLeft, color: AppColors.gunmetal, size: 20),
+                        icon: const Icon(
+                          LucideIcons.arrowLeft,
+                          color: AppColors.gunmetal,
+                          size: 20,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 8),
@@ -84,7 +96,11 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                       ),
                       const Spacer(),
                       IconButton(
-                        icon: const Icon(LucideIcons.moreVertical, color: AppColors.gunmetal, size: 20),
+                        icon: const Icon(
+                          LucideIcons.moreVertical,
+                          color: AppColors.gunmetal,
+                          size: 20,
+                        ),
                         onPressed: () {},
                       ),
                     ],
@@ -103,65 +119,75 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                           padding: const EdgeInsets.all(24),
                           child: Row(
                             children: [
-                               Container(
-                                 width: 64, height: 64,
-                                 decoration: BoxDecoration(
-                                   color: AppColors.surface2,
-                                   borderRadius: BorderRadius.circular(18),
-                                   border: Border.all(color: AppColors.borderSubtle),
-                                 ),
-                                 child: Center(
-                                   child: widget.credential['icon'] != null 
-                                    ? Icon(widget.credential['icon'] as IconData, color: AppColors.electric, size: 32)
-                                    : Text(
-                                       (widget.credential['name'] as String)[0],
-                                       style: GoogleFonts.spaceGrotesk(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.electric),
-                                     ),
-                                 ),
-                               ),
-                               const SizedBox(width: 20),
-                               Expanded(
-                                 child: Column(
-                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                   children: [
-                                     Text(
-                                       widget.credential['name'],
-                                       style: GoogleFonts.spaceGrotesk(
-                                         fontSize: 24,
-                                         fontWeight: FontWeight.bold,
-                                         color: AppColors.titanium,
-                                         letterSpacing: -0.5,
-                                       ),
-                                     ),
-                                     const SizedBox(height: 4),
-                                     Text(
-                                       'accounts.google.com',
-                                       style: GoogleFonts.inter(
-                                         color: AppColors.gunmetal,
-                                         fontSize: 13,
-                                         fontWeight: FontWeight.w500,
-                                       ),
-                                     ),
-                                   ],
-                                 ),
-                               ),
+                              Container(
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface2,
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: AppColors.borderSubtle,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: widget.credential['icon'] != null
+                                      ? Icon(
+                                          widget.credential['icon'] as IconData,
+                                          color: AppColors.electric,
+                                          size: 32,
+                                        )
+                                      : Text(
+                                          _name.isNotEmpty ? _name[0] : '?',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.electric,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _name,
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.titanium,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _url.isNotEmpty ? _url : 'Direct Access',
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.gunmetal,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95)),
+                        ).animate().fadeIn().scale(
+                          begin: const Offset(0.95, 0.95),
+                        ),
 
                         const SizedBox(height: 32),
 
                         _buildLabel('IDENTIFIER'),
-                        _buildField(
-                          value: widget.credential['username'],
-                          fieldId: 'username',
-                        ),
+                        _buildField(value: _username, fieldId: 'username'),
 
                         const SizedBox(height: 24),
 
                         _buildLabel('KEYPHRASE'),
                         _buildField(
-                          value: 'SuperSecretP@ssw0rd!',
+                          value: _password,
                           fieldId: 'password',
                           isPassword: true,
                         ),
@@ -175,13 +201,15 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
 
                         _buildLabel('ANNOTATIONS'),
                         _buildField(
-                          value: 'Use this for the main developer account. Ensure 2FA is active.',
+                          value: _notes.isNotEmpty
+                              ? _notes
+                              : 'No secure notes provided.',
                           fieldId: 'notes',
                           isMultiline: true,
                         ),
 
                         const SizedBox(height: 40),
-                        
+
                         _buildMetadataRow('Vault Entry', 'Oct 24, 2024'),
                         const SizedBox(height: 12),
                         _buildMetadataRow('Encryption', 'AES-256-GCM'),
@@ -193,11 +221,20 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: _buildActionBtn(LucideIcons.edit3, 'MODIFY', () {}),
+                              child: _buildActionBtn(
+                                LucideIcons.edit3,
+                                'MODIFY',
+                                () {},
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: _buildActionBtn(LucideIcons.trash2, 'PURGE', () {}, isDestructive: true),
+                              child: _buildActionBtn(
+                                LucideIcons.trash2,
+                                'PURGE',
+                                () {},
+                                isDestructive: true,
+                              ),
                             ),
                           ],
                         ),
@@ -229,12 +266,14 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
   }
 
   Widget _buildField({
-    required String value, 
+    required String value,
     required String fieldId,
     bool isPassword = false,
     bool isMultiline = false,
   }) {
-    final displayValue = isPassword && !_showPassword ? '••••••••••••••••' : value;
+    final displayValue = isPassword && !_showPassword
+        ? '••••••••••••••••'
+        : value;
 
     return GlassCard(
       opacity: 0.3,
@@ -246,7 +285,9 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
               displayValue,
               style: GoogleFonts.spaceMono(
                 fontSize: 14,
-                color: isPassword && !_showPassword ? AppColors.gunmetal : AppColors.titanium,
+                color: isPassword && !_showPassword
+                    ? AppColors.gunmetal
+                    : AppColors.titanium,
                 letterSpacing: isPassword && !_showPassword ? 2 : 0,
               ),
             ),
@@ -254,7 +295,11 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
           if (isPassword)
             IconButton(
               onPressed: () => setState(() => _showPassword = !_showPassword),
-              icon: Icon(_showPassword ? LucideIcons.eyeOff : LucideIcons.eye, size: 18, color: AppColors.gunmetal),
+              icon: Icon(
+                _showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                size: 18,
+                color: AppColors.gunmetal,
+              ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
@@ -265,14 +310,22 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _copiedField == fieldId ? AppColors.electric.withOpacity(0.1) : AppColors.surface2,
+                color: _copiedField == fieldId
+                    ? AppColors.electric.withOpacity(0.1)
+                    : AppColors.surface2,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: _copiedField == fieldId ? AppColors.electric : AppColors.borderSubtle),
+                border: Border.all(
+                  color: _copiedField == fieldId
+                      ? AppColors.electric
+                      : AppColors.borderSubtle,
+                ),
               ),
               child: Icon(
-                _copiedField == fieldId ? LucideIcons.check : LucideIcons.copy, 
-                size: 16, 
-                color: _copiedField == fieldId ? AppColors.electric : AppColors.gunmetal
+                _copiedField == fieldId ? LucideIcons.check : LucideIcons.copy,
+                size: 16,
+                color: _copiedField == fieldId
+                    ? AppColors.electric
+                    : AppColors.gunmetal,
               ),
             ),
           ),
@@ -316,7 +369,8 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 44, height: 44,
+                width: 44,
+                height: 44,
                 child: CircularProgressIndicator(
                   value: 0.8,
                   strokeWidth: 3,
@@ -324,7 +378,11 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.electric),
                 ),
               ),
-              const Icon(LucideIcons.clock, size: 16, color: AppColors.electric),
+              const Icon(
+                LucideIcons.clock,
+                size: 16,
+                color: AppColors.electric,
+              ),
             ],
           ),
         ],
@@ -332,7 +390,12 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
     );
   }
 
-  Widget _buildActionBtn(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
+  Widget _buildActionBtn(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    bool isDestructive = false,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -340,12 +403,20 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
         decoration: BoxDecoration(
           color: isDestructive ? const Color(0xFF220505) : AppColors.surface2,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDestructive ? const Color(0xFF441111) : AppColors.borderSubtle),
+          border: Border.all(
+            color: isDestructive
+                ? const Color(0xFF441111)
+                : AppColors.borderSubtle,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: isDestructive ? Colors.red : AppColors.titanium),
+            Icon(
+              icon,
+              size: 18,
+              color: isDestructive ? Colors.red : AppColors.titanium,
+            ),
             const SizedBox(width: 8),
             Text(
               label,
@@ -365,16 +436,28 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
   Widget _buildMetadataRow(String label, String value) {
     return Row(
       children: [
-         const Icon(LucideIcons.shieldCheck, size: 14, color: AppColors.gunmetal),
-         const SizedBox(width: 12),
-         Text(
-           '$label: ',
-           style: GoogleFonts.inter(fontSize: 12, color: AppColors.gunmetal, fontWeight: FontWeight.w500),
-         ),
-         Text(
-           value,
-           style: GoogleFonts.inter(fontSize: 12, color: AppColors.titanium, fontWeight: FontWeight.w600),
-         ),
+        const Icon(
+          LucideIcons.shieldCheck,
+          size: 14,
+          color: AppColors.gunmetal,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          '$label: ',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: AppColors.gunmetal,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: AppColors.titanium,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }

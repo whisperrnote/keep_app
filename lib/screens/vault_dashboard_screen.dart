@@ -34,7 +34,15 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCredentials();
+    _checkVaultStatus();
+  }
+
+  Future<void> _checkVaultStatus() async {
+    final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+    await vaultProvider.checkInitialization();
+    if (!vaultProvider.isLocked) {
+      _fetchCredentials();
+    }
   }
 
   Future<void> _fetchCredentials() async {

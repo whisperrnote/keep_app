@@ -9,7 +9,8 @@ class PasswordGeneratorScreen extends StatefulWidget {
   const PasswordGeneratorScreen({super.key});
 
   @override
-  State<PasswordGeneratorScreen> createState() => _PasswordGeneratorScreenState();
+  State<PasswordGeneratorScreen> createState() =>
+      _PasswordGeneratorScreenState();
 }
 
 class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
@@ -25,14 +26,17 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
     const nums = '0123456789';
     const syms = '!@#\$%^&*()';
     const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    
+
     String pool = chars;
     if (_includeNumbers) pool += nums;
     if (_includeSymbols) pool += syms;
     if (_includeUppercase) pool += upper;
-    
+
     setState(() {
-      _generatedPassword = List.generate(_length.toInt(), (index) => pool[index % pool.length]).join();
+      _generatedPassword = List.generate(
+        _length.toInt(),
+        (index) => pool[index % pool.length],
+      ).join();
     });
     HapticFeedback.mediumImpact();
   }
@@ -50,12 +54,21 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                 GlassCard(
                   borderRadius: BorderRadius.zero,
                   opacity: 0.8,
-                  border: const Border(bottom: BorderSide(color: AppColors.borderSubtle)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: const Border(
+                    bottom: BorderSide(color: AppColors.borderSubtle),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(LucideIcons.arrowLeft, color: AppColors.gunmetal, size: 20),
+                        icon: const Icon(
+                          LucideIcons.arrowLeft,
+                          color: AppColors.gunmetal,
+                          size: 20,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 8),
@@ -84,11 +97,13 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                           children: [
                             Text(
                               _generatedPassword,
-                              textAlign: Center,
+                              textAlign: TextAlign.center,
                               style: GoogleFonts.spaceMono(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: _generatedPassword.contains('•') ? AppColors.gunmetal : AppColors.electric,
+                                color: _generatedPassword.contains('•')
+                                    ? AppColors.gunmetal
+                                    : AppColors.electric,
                                 letterSpacing: 1,
                               ),
                             ),
@@ -96,12 +111,19 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _buildCircleAction(LucideIcons.refreshCw, _generate),
+                                _buildCircleAction(
+                                  LucideIcons.refreshCw,
+                                  _generate,
+                                ),
                                 const SizedBox(width: 24),
                                 _buildCircleAction(LucideIcons.copy, () {
-                                  Clipboard.setData(ClipboardData(text: _generatedPassword));
+                                  Clipboard.setData(
+                                    ClipboardData(text: _generatedPassword),
+                                  );
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Copied to clipboard')),
+                                    const SnackBar(
+                                      content: Text('Copied to clipboard'),
+                                    ),
                                   );
                                 }),
                               ],
@@ -114,7 +136,7 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
 
                       _buildLabel('ENTROPY PARAMETERS'),
                       const SizedBox(height: 16),
-                      
+
                       GlassCard(
                         opacity: 0.3,
                         padding: const EdgeInsets.all(24),
@@ -123,8 +145,20 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Length', style: GoogleFonts.inter(color: AppColors.titanium, fontWeight: FontWeight.w600)),
-                                Text('${_length.toInt()}', style: GoogleFonts.spaceMono(color: AppColors.electric, fontWeight: FontWeight.bold)),
+                                Text(
+                                  'Length',
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.titanium,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  '${_length.toInt()}',
+                                  style: GoogleFonts.spaceMono(
+                                    color: AppColors.electric,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                             Slider(
@@ -136,15 +170,27 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                               onChanged: (val) => setState(() => _length = val),
                             ),
                             const SizedBox(height: 24),
-                            _buildToggle('Include Numbers (0-9)', _includeNumbers, (v) => setState(() => _includeNumbers = v)),
-                            _buildToggle('Include Symbols (!@#)', _includeSymbols, (v) => setState(() => _includeSymbols = v)),
-                            _buildToggle('Include Uppercase (A-Z)', _includeUppercase, (v) => setState(() => _includeUppercase = v)),
+                            _buildToggle(
+                              'Include Numbers (0-9)',
+                              _includeNumbers,
+                              (v) => setState(() => _includeNumbers = v),
+                            ),
+                            _buildToggle(
+                              'Include Symbols (!@#)',
+                              _includeSymbols,
+                              (v) => setState(() => _includeSymbols = v),
+                            ),
+                            _buildToggle(
+                              'Include Uppercase (A-Z)',
+                              _includeUppercase,
+                              (v) => setState(() => _includeUppercase = v),
+                            ),
                           ],
                         ),
                       ),
 
                       const SizedBox(height: 48),
-                      
+
                       SizedBox(
                         width: double.infinity,
                         height: 60,
@@ -152,7 +198,9 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                           onPressed: _generate,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.electric,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                           child: Text(
                             'GENERATE SECURE KEY',
@@ -191,7 +239,8 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 56, height: 56,
+        width: 56,
+        height: 56,
         decoration: BoxDecoration(
           color: AppColors.surface2,
           shape: BoxShape.circle,
@@ -208,7 +257,10 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.inter(color: AppColors.gunmetal, fontSize: 14)),
+          Text(
+            label,
+            style: GoogleFonts.inter(color: AppColors.gunmetal, fontSize: 14),
+          ),
           Switch(
             value: value,
             onChanged: onChanged,

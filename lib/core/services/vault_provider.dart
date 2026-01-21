@@ -16,18 +16,54 @@ class VaultProvider with ChangeNotifier {
 
   SecretKey? _sessionKey;
   bool _isLocked = true;
+  bool _isInitialized = false;
 
   bool get isLocked => _isLocked;
+  bool get isInitialized => _isInitialized;
   bool get hasSessionKey => _sessionKey != null;
+
+  Future<void> checkInitialization() async {
+    final masterHash = await _secureStorage.read(key: 'master_password_hash');
+    _isInitialized = masterHash != null;
+    notifyListeners();
+  }
+
+  Future<void> setupMasterPassword(String password) async {
+    // In a real app, we'd generate a random salt and store it in Appwrite
+    const salt = 'constant_salt_for_prototype';
+    final key = await _encryptionService.deriveKey(password, salt);
+
+    // Store a hash of the password to verify later
+    // For simplicity in this prototype, we'll store a fixed string or the derived key's hash
+    final bytes = await key.extractBytes();
+    final hash = base64Encode(
+      bytes,
+    ); // Not a real hash, but works for prototype verification
+
+    await _secureStorage.write(key: 'master_password_hash', value: hash);
+    _sessionKey = key;
+    _isLocked = false;
+    _isInitialized = true;
+    notifyListeners();
+  }
 
   /// Unlocks the vault using the master password.
   /// This derives the session key and stores it in memory.
   Future<bool> unlockWithPassword(String password, String salt) async {
     try {
-      _sessionKey = await _encryptionService.deriveKey(password, salt);
-      _isLocked = false;
-      notifyListeners();
-      return true;
+      final key = await _encryptionService.deriveKey(password, salt);
+      final bytes = await key.extractBytes();
+      final currentHash = base64Encode(bytes);
+
+      final storedHash = await _secureStorage.read(key: 'master_password_hash');
+
+      if (storedHash == currentHash) {
+        _sessionKey = key;
+        _isLocked = false;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }

@@ -16,8 +16,54 @@ class VaultLockScreen extends StatefulWidget {
 
 class _VaultLockScreenState extends State<VaultLockScreen> {
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
   String? _error;
+
+  void _handleAction() async {
+    final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+
+    if (!vaultProvider.isInitialized) {
+      _handleSetup();
+    } else {
+      _handleUnlock();
+    }
+  }
+
+  void _handleSetup() async {
+    if (_passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      setState(() => _error = 'Please fill in both password fields');
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() => _error = 'Passwords do not match');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+      await vaultProvider.setupMasterPassword(_passwordController.text);
+
+      // Clear fields
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+
+      widget.onUnlocked();
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Failed to setup vault: $e';
+      });
+    }
+  }
 
   void _handleUnlock() async {
     if (_passwordController.text.isEmpty) return;
@@ -36,21 +82,25 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
     );
 
     if (success) {
+      _passwordController.clear();
       widget.onUnlocked();
     } else {
       setState(() {
         _isLoading = false;
-        _error = 'Failed to unlock vault. Please check your password.';
+        _error = 'Invalid master password. Data decryption failed.';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final vaultProvider = Provider.of<VaultProvider>(context);
+    final isSetup = !vaultProvider.isInitialized;
+
     return Scaffold(
       backgroundColor: AppColors.voidBg,
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -63,15 +113,15 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppColors.borderSubtle),
                 ),
-                child: const Icon(
-                  LucideIcons.lock,
+                child: Icon(
+                  isSetup ? LucideIcons.shieldAlert : LucideIcons.lock,
                   size: 32,
                   color: AppColors.electric,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
-                'VAULT LOCKED',
+                isSetup ? 'INITIALIZE VAULT' : 'VAULT LOCKED',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -80,7 +130,9 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter master password to decrypt your credentials',
+                isSetup
+                    ? 'Set a master password to protect your credentials. This cannot be recovered.'
+                    : 'Enter master password to decrypt your credentials',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(color: AppColors.gunmetal),
               ),
@@ -93,12 +145,31 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
                   obscureText: true,
                   style: GoogleFonts.inter(color: AppColors.titanium),
                   decoration: InputDecoration(
-                    hintText: 'Master Password',
+                    hintText: isSetup
+                        ? 'New Master Password'
+                        : 'Master Password',
                     hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
                     border: InputBorder.none,
                   ),
                 ),
               ),
+              if (isSetup) ...[
+                const SizedBox(height: 16),
+                GlassCard(
+                  opacity: 0.3,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    style: GoogleFonts.inter(color: AppColors.titanium),
+                    decoration: InputDecoration(
+                      hintText: 'Confirm Master Password',
+                      hintStyle: GoogleFonts.inter(color: AppColors.gunmetal),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ],
               if (_error != null) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -111,7 +182,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleUnlock,
+                  onPressed: _isLoading ? null : _handleAction,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.electric,
                     shape: RoundedRectangleBorder(
@@ -121,7 +192,7 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
                   child: _isLoading
                       ? const CircularProgressIndicator(color: AppColors.voidBg)
                       : Text(
-                          'UNLOCK VAULT',
+                          isSetup ? 'SECURE VAULT' : 'UNLOCK VAULT',
                           style: GoogleFonts.spaceGrotesk(
                             fontWeight: FontWeight.bold,
                             color: AppColors.voidBg,

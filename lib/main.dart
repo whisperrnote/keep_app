@@ -10,8 +10,34 @@ void main() {
   runApp(const WhisperrKeepApp());
 }
 
-class WhisperrKeepApp extends StatelessWidget {
+class WhisperrKeepApp extends StatefulWidget {
   const WhisperrKeepApp({super.key});
+
+  @override
+  State<WhisperrKeepApp> createState() => _WhisperrKeepAppState();
+}
+
+class _WhisperrKeepAppState extends State<WhisperrKeepApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      VaultProvider().lock();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

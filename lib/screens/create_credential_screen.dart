@@ -6,6 +6,7 @@ import '../core/theme/colors.dart';
 import '../widgets/glass_card.dart';
 import '../core/services/vault_service.dart';
 import '../core/providers/auth_provider.dart';
+import '../core/services/vault_provider.dart';
 
 class CreateCredentialScreen extends StatefulWidget {
   const CreateCredentialScreen({super.key});
@@ -42,6 +43,17 @@ class _CreateCredentialScreenState extends State<CreateCredentialScreen> {
 
     setState(() => _isLoading = true);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+
+    if (vaultProvider.isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vault is locked. Decrypt session required.'),
+        ),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
 
     try {
       if (authProvider.user != null) {
