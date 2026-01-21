@@ -21,6 +21,7 @@ class _CreateCredentialScreenState extends State<CreateCredentialScreen> {
   final _passwordController = TextEditingController();
   final _urlController = TextEditingController();
   final _notesController = TextEditingController();
+  final _totpController = TextEditingController();
   final VaultService _vaultService = VaultService();
 
   String _category = 'Social';
@@ -64,6 +65,7 @@ class _CreateCredentialScreenState extends State<CreateCredentialScreen> {
           password: _passwordController.text,
           url: _urlController.text,
           notes: _notesController.text,
+          totpSecret: _totpController.text,
           category: _category,
         );
         if (mounted) Navigator.pop(context);
@@ -104,6 +106,9 @@ class _CreateCredentialScreenState extends State<CreateCredentialScreen> {
                       const SizedBox(height: 24),
                       _buildLabel('ACCESS KEY / PASSWORD'),
                       _buildPasswordField(),
+                      const SizedBox(height: 24),
+                      _buildLabel('TOTP SECRET (BASE32)'),
+                      _buildTextField(_totpController, 'JBSW... (Optional)'),
                       const SizedBox(height: 24),
                       _buildLabel('DOMAIN / URL'),
                       _buildTextField(_urlController, 'https://...'),

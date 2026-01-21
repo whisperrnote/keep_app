@@ -5,6 +5,7 @@ class Credential {
   String password;
   final String? url;
   final String? notes;
+  String? totpSecret;
   final String category; // social, work, finance, etc.
   final String userId;
   final DateTime createdAt;
@@ -17,6 +18,7 @@ class Credential {
     required this.password,
     this.url,
     this.notes,
+    this.totpSecret,
     required this.category,
     required this.userId,
     required this.createdAt,
@@ -31,6 +33,7 @@ class Credential {
       password: json['password'] ?? '',
       url: json['url'],
       notes: json['notes'],
+      totpSecret: json['totpSecret'],
       category: json['category'] ?? 'general',
       userId: json['userId'] ?? '',
       createdAt: DateTime.parse(
@@ -49,6 +52,7 @@ class Credential {
       'password': password,
       'url': url,
       'notes': notes,
+      'totpSecret': totpSecret,
       'category': category,
       'userId': userId,
     };

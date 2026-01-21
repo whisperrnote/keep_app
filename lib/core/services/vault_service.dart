@@ -23,11 +23,16 @@ class VaultService {
           .map((doc) => Credential.fromJson(doc.data))
           .toList();
 
-      // Decrypt passwords if vault is unlocked
+      // Decrypt sensitive fields if vault is unlocked
       if (!_vaultProvider.isLocked) {
         for (var cred in credentials) {
           try {
             cred.password = await _vaultProvider.decryptData(cred.password);
+            if (cred.totpSecret != null) {
+              cred.totpSecret = await _vaultProvider.decryptData(
+                cred.totpSecret!,
+              );
+            }
           } catch (e) {
             // Probably not encrypted or wrong key
           }
@@ -47,11 +52,16 @@ class VaultService {
     required String password,
     String? url,
     String? notes,
+    String? totpSecret,
     required String category,
   }) async {
     try {
-      // Encrypt password before saving
+      // Encrypt sensitive fields
       final encryptedPassword = await _vaultProvider.encryptData(password);
+      String? encryptedTotpSecret;
+      if (totpSecret != null && totpSecret.isNotEmpty) {
+        encryptedTotpSecret = await _vaultProvider.encryptData(totpSecret);
+      }
 
       final doc = await _databases.createDocument(
         databaseId: AppwriteConstants.databaseId,
@@ -63,6 +73,7 @@ class VaultService {
           'password': encryptedPassword,
           'url': url,
           'notes': notes,
+          'totpSecret': encryptedTotpSecret,
           'category': category,
           'userId': userId,
           'createdAt': DateTime.now().toIso8601String(),

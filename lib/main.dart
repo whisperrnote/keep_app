@@ -6,7 +6,18 @@ import 'screens/home_screen.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/services/vault_provider.dart';
 
-void main() {
+import 'core/services/autofill/desktop_autofill_service.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Desktop Services
+  await windowManager.ensureInitialized();
+  // hotKeyManager doesn't need ensureInitialized in this version
+  await DesktopAutofillService().initialize();
+
   runApp(const WhisperrKeepApp());
 }
 

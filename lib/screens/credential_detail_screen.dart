@@ -10,6 +10,7 @@ import '../widgets/glass_card.dart';
 import 'dart:async';
 import 'package:otp/otp.dart';
 import 'package:base32/base32.dart';
+import '../core/services/autofill/desktop_autofill_service.dart';
 
 class CredentialDetailScreen extends StatefulWidget {
   final Map<String, dynamic> credential;
@@ -47,11 +48,14 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
   }
 
   void _generateOTP() {
-    // In a real app, 'totpSecret' would be a field in the credential model
-    // For this prototype, we'll use a placeholder or derived secret
-    final secret =
-        widget.credential['totpSecret'] as String? ?? 'JBSWY3DPEHPK3PXP';
-
+    final secret = widget.credential['totpSecret'] as String?;
+    if (secret == null || secret.isEmpty) {
+      setState(() {
+        _currentOTP = '------';
+      });
+      return;
+    }
+    
     try {
       final now = DateTime.now().millisecondsSinceEpoch;
       final otp = OTP.generateTOTPCodeString(
@@ -61,15 +65,17 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
         algorithm: Algorithm.SHA1,
         isGoogle: true,
       );
-
+      
       setState(() {
         _currentOTP = otp;
-        // Progress for 30s interval
         _otpProgress = 1.0 - ((now / 1000) % 30) / 30;
       });
     } catch (e) {
-      // Invalid secret
+      setState(() {
+        _currentOTP = 'ERROR';
+      });
     }
+  }
   }
 
   String get _password => widget.credential['password'] ?? 'No Password';
@@ -85,6 +91,17 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _copiedField = null);
     });
+  }
+
+  Future<void> _handleModify() async {
+    // Logic to modify credential
+  }
+
+  void _handleAutofill() async {
+    final desktopService = DesktopAutofillService();
+    // In a real app, we'd offer a selection of which field to autofill
+    // For now, we'll use the password as the primary target
+    await desktopService.performAutofill(_password);
   }
 
   @override
@@ -274,21 +291,27 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                           children: [
                             Expanded(
                               child: _buildActionBtn(
-                                LucideIcons.edit3,
-                                'MODIFY',
-                                () {},
+                                LucideIcons.zap,
+                                'AUTOFILL',
+                                _handleAutofill,
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: _buildActionBtn(
-                                LucideIcons.trash2,
-                                'PURGE',
-                                () {},
-                                isDestructive: true,
+                                LucideIcons.edit3,
+                                'MODIFY',
+                                _handleModify,
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildActionBtn(
+                          LucideIcons.trash2,
+                          'PURGE CREDENTIAL',
+                          () {},
+                          isDestructive: true,
                         ),
                       ],
                     ),
