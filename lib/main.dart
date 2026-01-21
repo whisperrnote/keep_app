@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'core/providers/auth_provider.dart';
 
 void main() {
   runApp(const WhisperrKeepApp());

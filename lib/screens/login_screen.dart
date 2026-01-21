@@ -5,23 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../core/theme/colors.dart';
 import '../widgets/glass_card.dart';
-
-class AuthProvider extends ChangeNotifier {
-  bool _isAuthenticated = false;
-  bool get isAuthenticated => _isAuthenticated;
-
-  Future<void> login(String email, String password) async {
-    // Mock login
-    await Future.delayed(const Duration(seconds: 1));
-    _isAuthenticated = true;
-    notifyListeners();
-  }
-
-  void logout() {
-    _isAuthenticated = false;
-    notifyListeners();
-  }
-}
+import '../core/providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -63,15 +47,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 gradient: RadialGradient(
                   center: Alignment(0, -0.3),
                   radius: 1.5,
-                  colors: [
-                    Color(0x1A00F5FF), 
-                    AppColors.voidBg,
-                  ],
+                  colors: [Color(0x1A00F5FF), AppColors.voidBg],
                 ),
               ),
             ),
           ),
-          
+
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -82,24 +63,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       // IDMS Header
                       Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface2,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.1)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.electric.withOpacity(0.1),
-                              blurRadius: 30,
-                              spreadRadius: 10,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface2,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.electric.withOpacity(0.1),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: const Icon(LucideIcons.fingerprint, size: 40, color: AppColors.electric),
-                      ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(0.8, 0.8)),
-                      
+                            child: const Icon(
+                              LucideIcons.fingerprint,
+                              size: 40,
+                              color: AppColors.electric,
+                            ),
+                          )
+                          .animate()
+                          .fadeIn(duration: 800.ms)
+                          .scale(begin: const Offset(0.8, 0.8)),
+
                       const SizedBox(height: 32),
-                      
+
                       Text(
                         'WHISPERR IDMS',
                         style: GoogleFonts.spaceGrotesk(
@@ -109,9 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppColors.titanium,
                         ),
                       ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
-                      
+
                       const SizedBox(height: 8),
-                      
+
                       Text(
                         'Keep Vault Authentication',
                         style: GoogleFonts.inter(
@@ -124,41 +114,60 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 48),
 
                       GlassCard(
-                        opacity: 0.4,
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildInput('IDENTIFIER', _emailController, false, LucideIcons.mail),
-                            const SizedBox(height: 24),
-                            _buildInput('KEY', _passwordController, true, LucideIcons.lock),
-                            
-                            const SizedBox(height: 40),
+                            opacity: 0.4,
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildInput(
+                                  'IDENTIFIER',
+                                  _emailController,
+                                  false,
+                                  LucideIcons.mail,
+                                ),
+                                const SizedBox(height: 24),
+                                _buildInput(
+                                  'KEY',
+                                  _passwordController,
+                                  true,
+                                  LucideIcons.lock,
+                                ),
 
-                            SizedBox(
-                              width: double.infinity,
-                              height: 60,
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _handleLogin,
-                                child: _isLoading 
-                                  ? const SizedBox(
-                                      width: 24, 
-                                      height: 24, 
-                                      child: CircularProgressIndicator(color: AppColors.voidBg, strokeWidth: 2)
-                                    )
-                                  : const Text('AUTHORIZE'),
-                              ),
+                                const SizedBox(height: 40),
+
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 60,
+                                  child: ElevatedButton(
+                                    onPressed: _isLoading ? null : _handleLogin,
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              color: AppColors.voidBg,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : const Text('AUTHORIZE'),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ).animate().fadeIn(duration: 800.ms, delay: 400.ms).slideY(begin: 0.1, end: 0),
+                          )
+                          .animate()
+                          .fadeIn(duration: 800.ms, delay: 400.ms)
+                          .slideY(begin: 0.1, end: 0),
 
                       const SizedBox(height: 32),
-                      
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildSocialButton(LucideIcons.shieldCheck, 'PASSKEY'),
+                          _buildSocialButton(
+                            LucideIcons.shieldCheck,
+                            'PASSKEY',
+                          ),
                           const SizedBox(width: 16),
                           _buildSocialButton(LucideIcons.key, 'MASTERPASS'),
                         ],
@@ -174,7 +183,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildInput(String label, TextEditingController controller, bool isObscure, IconData icon) {
+  Widget _buildInput(
+    String label,
+    TextEditingController controller,
+    bool isObscure,
+    IconData icon,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -202,7 +216,10 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: InputDecoration(
               border: InputBorder.none,
               prefixIcon: Icon(icon, size: 18, color: AppColors.gunmetal),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
             ),
           ),
         ),

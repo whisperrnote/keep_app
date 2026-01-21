@@ -1,4 +1,4 @@
-name: keep_app
+name: note_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -37,6 +37,9 @@ dependencies:
   lucide_icons: ^0.301.0
   provider: ^6.1.2
   flutter_svg: ^2.0.10+1
+  appwrite: ^12.0.0
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
