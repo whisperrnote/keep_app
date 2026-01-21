@@ -41,6 +41,10 @@ class VaultProvider with ChangeNotifier {
     ); // Not a real hash, but works for prototype verification
 
     await _secureStorage.write(key: 'master_password_hash', value: hash);
+
+    // For biometrics, store the session key securely
+    await saveMasterKeySecurely(key);
+
     _sessionKey = key;
     _isLocked = false;
     _isInitialized = true;
@@ -60,6 +64,10 @@ class VaultProvider with ChangeNotifier {
       if (storedHash == currentHash) {
         _sessionKey = key;
         _isLocked = false;
+
+        // Refresh the secure storage key for biometrics on successful password login
+        await saveMasterKeySecurely(key);
+
         notifyListeners();
         return true;
       }

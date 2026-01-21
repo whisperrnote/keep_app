@@ -47,7 +47,10 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
 
   Future<void> _fetchCredentials() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+
     if (authProvider.user != null) {
+      setState(() => _isLoading = true);
       try {
         final credentials = await _vaultService.listCredentials(
           authProvider.user!.$id,
@@ -236,6 +239,10 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
                         const SizedBox(height: 24),
 
                         // Folders Filter
+                        _buildPasswordHealthCard(),
+
+                        const SizedBox(height: 24),
+
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(

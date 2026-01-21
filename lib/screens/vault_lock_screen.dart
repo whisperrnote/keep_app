@@ -200,10 +200,46 @@ class _VaultLockScreenState extends State<VaultLockScreen> {
                         ),
                 ),
               ),
+              if (!isSetup) ...[
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: _isLoading ? null : _handleBiometricUnlock,
+                  icon: const Icon(
+                    LucideIcons.fingerprint,
+                    color: AppColors.electric,
+                  ),
+                  label: Text(
+                    'Use Biometrics',
+                    style: GoogleFonts.inter(
+                      color: AppColors.titanium,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _handleBiometricUnlock() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
+    final success = await vaultProvider.unlockWithBiometrics();
+
+    if (success) {
+      widget.onUnlocked();
+    } else {
+      setState(() {
+        _isLoading = false;
+        _error = 'Biometric authentication failed or not setup.';
+      });
+    }
   }
 }
