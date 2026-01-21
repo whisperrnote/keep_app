@@ -1,15 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../core/theme/colors.dart';
-
-import '../widgets/glass_card.dart';
-
-import 'dart:async';
 import 'package:otp/otp.dart';
-import 'package:base32/base32.dart';
+import '../core/theme/colors.dart';
+import '../widgets/glass_card.dart';
 import '../core/services/autofill/desktop_autofill_service.dart';
 
 class CredentialDetailScreen extends StatefulWidget {
@@ -55,7 +52,7 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
       });
       return;
     }
-    
+
     try {
       final now = DateTime.now().millisecondsSinceEpoch;
       final otp = OTP.generateTOTPCodeString(
@@ -65,7 +62,7 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
         algorithm: Algorithm.SHA1,
         isGoogle: true,
       );
-      
+
       setState(() {
         _currentOTP = otp;
         _otpProgress = 1.0 - ((now / 1000) % 30) / 30;
@@ -75,7 +72,6 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
         _currentOTP = 'ERROR';
       });
     }
-  }
   }
 
   String get _password => widget.credential['password'] ?? 'No Password';
@@ -99,8 +95,6 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
 
   void _handleAutofill() async {
     final desktopService = DesktopAutofillService();
-    // In a real app, we'd offer a selection of which field to autofill
-    // For now, we'll use the password as the primary target
     await desktopService.performAutofill(_password);
   }
 
@@ -110,7 +104,6 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
       backgroundColor: AppColors.voidBg,
       body: Stack(
         children: [
-          // Ambient Glow
           Positioned(
             top: -100,
             right: -100,
@@ -132,7 +125,6 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Header
                 GlassCard(
                   borderRadius: BorderRadius.zero,
                   opacity: 0.8,
@@ -182,7 +174,6 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Entity Card
                         GlassCard(
                           opacity: 0.4,
                           padding: const EdgeInsets.all(24),
