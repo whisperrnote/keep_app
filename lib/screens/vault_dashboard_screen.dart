@@ -15,6 +15,7 @@ import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
 
 import '../core/services/vault_provider.dart';
+import '../core/services/autofill/autofill_manager.dart';
 import 'vault_lock_screen.dart';
 
 class VaultDashboardScreen extends StatefulWidget {
