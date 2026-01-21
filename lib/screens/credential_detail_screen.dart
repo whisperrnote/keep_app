@@ -80,7 +80,7 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
 
   String get _password => widget.credential['password'] ?? 'No Password';
   String get _notes => widget.credential['notes'] ?? '';
-  String get _name => widget.credential['name'] ?? 'Untitled';
+  String get _name => widget.credential['title'] ?? 'Untitled';
   String get _username => widget.credential['username'] ?? 'No Username';
   String get _url => widget.credential['url'] ?? '';
 

@@ -526,15 +526,7 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
           await Navigator.push(
             context,
             GlassRoute(
-              page: CredentialDetailScreen(
-                credential: {
-                  'name': credential.title,
-                  'username': credential.username,
-                  'password': credential.password,
-                  'url': credential.url,
-                  'notes': credential.notes,
-                },
-              ),
+              page: CredentialDetailScreen(credential: credential.toJson()),
             ),
           );
           _fetchCredentials();
