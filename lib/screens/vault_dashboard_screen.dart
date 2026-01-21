@@ -343,6 +343,84 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
     );
   }
 
+  Widget _buildPasswordHealthCard() {
+    int weakCount = _credentials.where((c) => c.password.length < 12).length;
+    int reusedCount = 0;
+    Map<String, int> counts = {};
+    for (var c in _credentials) {
+      counts[c.password] = (counts[c.password] ?? 0) + 1;
+    }
+    reusedCount = counts.values.where((v) => v > 1).length;
+
+    return GlassCard(
+      opacity: 0.3,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'VAULT HEALTH',
+                style: GoogleFonts.spaceMono(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.electric,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const Icon(
+                LucideIcons.activity,
+                size: 14,
+                color: AppColors.electric,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildHealthStat(
+                LucideIcons.shieldAlert,
+                '$weakCount Weak',
+                Colors.orange,
+              ),
+              const SizedBox(width: 24),
+              _buildHealthStat(
+                LucideIcons.copy,
+                '$reusedCount Reused',
+                Colors.redAccent,
+              ),
+              const SizedBox(width: 24),
+              _buildHealthStat(
+                LucideIcons.checkCircle2,
+                '${_credentials.length} Total',
+                AppColors.electric,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHealthStat(IconData icon, String label, Color color) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.titanium,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDesktopCredentialsGrid() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
