@@ -43,6 +43,14 @@ dependencies:
   cryptography: ^2.9.0
   flutter_secure_storage: ^10.0.0
   local_auth: ^3.0.0
+  otp: ^3.2.0
+  system_tray: ^2.0.3
+  window_manager: ^0.5.1
+  screen_retriever: ^0.2.0
+  hotkey_manager: ^0.2.3
+  protocol_handler: ^0.2.0
+  tray_manager: ^0.5.2
+  base32: ^2.2.0
 
 dev_dependencies:
   flutter_test:

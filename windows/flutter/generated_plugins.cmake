@@ -4,8 +4,14 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_secure_storage_windows
+  hotkey_manager_windows
   local_auth_windows
+  protocol_handler_windows
+  screen_retriever_windows
+  system_tray
+  tray_manager
   url_launcher_windows
+  window_manager
   window_to_front
 )
 

@@ -7,6 +7,10 @@ import '../core/theme/colors.dart';
 
 import '../widgets/glass_card.dart';
 
+import 'dart:async';
+import 'package:otp/otp.dart';
+import 'package:base32/base32.dart';
+
 class CredentialDetailScreen extends StatefulWidget {
   final Map<String, dynamic> credential;
 
@@ -19,6 +23,54 @@ class CredentialDetailScreen extends StatefulWidget {
 class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
   bool _showPassword = false;
   String? _copiedField;
+  String _currentOTP = '------';
+  double _otpProgress = 0.0;
+  Timer? _otpTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startOTPTimer();
+  }
+
+  @override
+  void dispose() {
+    _otpTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startOTPTimer() {
+    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _generateOTP();
+    });
+    _generateOTP();
+  }
+
+  void _generateOTP() {
+    // In a real app, 'totpSecret' would be a field in the credential model
+    // For this prototype, we'll use a placeholder or derived secret
+    final secret =
+        widget.credential['totpSecret'] as String? ?? 'JBSWY3DPEHPK3PXP';
+
+    try {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final otp = OTP.generateTOTPCodeString(
+        secret,
+        now,
+        interval: 30,
+        algorithm: Algorithm.SHA1,
+        isGoogle: true,
+      );
+
+      setState(() {
+        _currentOTP = otp;
+        // Progress for 30s interval
+        _otpProgress = 1.0 - ((now / 1000) % 30) / 30;
+      });
+    } catch (e) {
+      // Invalid secret
+    }
+  }
 
   String get _password => widget.credential['password'] ?? 'No Password';
   String get _notes => widget.credential['notes'] ?? '';
@@ -344,7 +396,9 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '482 193',
+                _currentOTP.contains('-')
+                    ? _currentOTP
+                    : '${_currentOTP.substring(0, 3)} ${_currentOTP.substring(3)}',
                 style: GoogleFonts.spaceMono(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -354,7 +408,7 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'EXPIRES IN 24S',
+                'EXPIRES IN ${(_otpProgress * 30).toInt()}S',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
@@ -365,25 +419,30 @@ class _CredentialDetailScreenState extends State<CredentialDetailScreen> {
             ],
           ),
           const Spacer(),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 44,
-                height: 44,
-                child: CircularProgressIndicator(
-                  value: 0.8,
-                  strokeWidth: 3,
-                  backgroundColor: AppColors.surface2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.electric),
+          GestureDetector(
+            onTap: () => _handleCopy(_currentOTP, 'otp'),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: CircularProgressIndicator(
+                    value: _otpProgress,
+                    strokeWidth: 3,
+                    backgroundColor: AppColors.surface2,
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.electric,
+                    ),
+                  ),
                 ),
-              ),
-              const Icon(
-                LucideIcons.clock,
-                size: 16,
-                color: AppColors.electric,
-              ),
-            ],
+                Icon(
+                  _copiedField == 'otp' ? LucideIcons.check : LucideIcons.clock,
+                  size: 16,
+                  color: AppColors.electric,
+                ),
+              ],
+            ),
           ),
         ],
       ),
