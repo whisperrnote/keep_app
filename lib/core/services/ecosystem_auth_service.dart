@@ -21,12 +21,12 @@ class EcosystemAuthService {
       groupId: _groupId,
       accessibility: KeychainAccessibility.first_unlock,
     ),
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
+    aOptions: const AndroidOptions(
+      
       // sharedUserId in Manifest handles the OS-level permission
     ),
-    lOptions: LinuxOptions(
-      accountName: _accountName,
+    lOptions: const LinuxOptions(
+      
     ),
     wOptions: WindowsOptions(
       // Windows DPAPI is per-user, but we use a shared workspace to ensure
