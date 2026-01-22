@@ -63,7 +63,7 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors.titanium),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface.withOpacity(0.95),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
