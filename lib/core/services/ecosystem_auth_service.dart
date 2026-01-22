@@ -2,6 +2,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
 class EcosystemAuthService {
+  static final EcosystemAuthService _instance = EcosystemAuthService._internal();
+  factory EcosystemAuthService() => _instance;
+  EcosystemAuthService._internal();
+
   static const String _vaultKey = 'whisperr_ecosystem_vault';
   static const String _groupId = 'group.com.whisperr.ecosystem';
   
@@ -52,6 +56,7 @@ class EcosystemAuthService {
         };
       }
     } catch (e) {
+      // In case of corruption or platform key change
       await clearSession();
     }
     return null;
