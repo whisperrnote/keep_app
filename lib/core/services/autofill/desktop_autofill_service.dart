@@ -59,7 +59,7 @@ class DesktopAutofillService {
 
     // Quick Autofill Hotkey (Alt + Shift + A)
     HotKey autofillHotkey = HotKey(
-      PhysicalKeyboardKey.keyA,
+      key: PhysicalKeyboardKey.keyA,
       modifiers: [HotKeyModifier.alt, HotKeyModifier.shift],
       scope: HotKeyScope.system,
     );

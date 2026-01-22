@@ -15,7 +15,7 @@ import 'settings_screen.dart';
 import 'password_generator_screen.dart';
 import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
-import 'autofill_overlay.dart';
+import '../widgets/autofill_overlay.dart';
 
 import '../core/services/vault_provider.dart';
 import '../core/services/autofill/autofill_manager.dart';
