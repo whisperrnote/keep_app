@@ -5,6 +5,7 @@ import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/services/vault_provider.dart';
+import 'core/constants/app_constants.dart';
 
 import 'core/services/autofill/desktop_autofill_service.dart';
 import 'core/services/autofill/autofill_manager.dart';
@@ -74,6 +75,9 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (AppConstants.useMockMode) {
+      return const HomeScreen();
+    }
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
         if (auth.isAuthenticated) {
