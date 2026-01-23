@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/appwrite_service.dart';
 import '../services/ecosystem_auth_service.dart';
 import 'package:appwrite/models.dart' as models;
+import '../constants/app_constants.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AppwriteService _appwrite = AppwriteService();
@@ -19,6 +20,26 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> init() async {
+    if (AppConstants.useMockMode) {
+      _user = models.User(
+        $id: "mock_user",
+        $createdAt: DateTime.now().toIso8601String(),
+        $updatedAt: DateTime.now().toIso8601String(),
+        name: "Mock User",
+        registration: DateTime.now().toIso8601String(),
+        status: true,
+        passwordUpdate: DateTime.now().toIso8601String(),
+        email: "mock@example.com",
+        phone: "",
+        emailVerification: true,
+        phoneVerification: true,
+        prefs: models.Preferences(data: {}),
+        accessedAt: DateTime.now().toIso8601String(),
+      );
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
     try {
       _user = await _appwrite.account.get();
     } catch (e) {
