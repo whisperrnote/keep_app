@@ -3,12 +3,27 @@ import '../constants/appwrite_constants.dart';
 import 'appwrite_service.dart';
 import '../models/credential_model.dart';
 import 'vault_provider.dart';
+import '../constants/app_constants.dart';
 
 class VaultService {
   final Databases _databases = AppwriteService().databases;
   final VaultProvider _vaultProvider = VaultProvider();
 
   Future<List<Credential>> listCredentials(String userId) async {
+    if (AppConstants.useMockMode) {
+      return [
+        Credential(
+          id: '1',
+          title: 'Mock Google Account',
+          username: 'mockuser@gmail.com',
+          password: 'mock_password_123',
+          category: 'Social',
+          userId: userId,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
+    }
     try {
       final response = await _databases.listDocuments(
         databaseId: AppwriteConstants.databaseId,

@@ -1,4 +1,3 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import '../services/appwrite_service.dart';
 import '../services/ecosystem_auth_service.dart';
@@ -21,21 +20,24 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> init() async {
     if (AppConstants.useMockMode) {
-      _user = models.User(
-        $id: "mock_user",
-        $createdAt: DateTime.now().toIso8601String(),
-        $updatedAt: DateTime.now().toIso8601String(),
-        name: "Mock User",
-        registration: DateTime.now().toIso8601String(),
-        status: true,
-        passwordUpdate: DateTime.now().toIso8601String(),
-        email: "mock@example.com",
-        phone: "",
-        emailVerification: true,
-        phoneVerification: true,
-        prefs: models.Preferences(data: {}),
-        accessedAt: DateTime.now().toIso8601String(),
-      );
+      _user = models.User.fromMap({
+        '\$id': 'mock_user',
+        '\$createdAt': DateTime.now().toIso8601String(),
+        '\$updatedAt': DateTime.now().toIso8601String(),
+        'name': 'Mock User',
+        'registration': DateTime.now().toIso8601String(),
+        'status': true,
+        'passwordUpdate': DateTime.now().toIso8601String(),
+        'email': 'mock@example.com',
+        'phone': '',
+        'emailVerification': true,
+        'phoneVerification': true,
+        'prefs': {},
+        'accessedAt': DateTime.now().toIso8601String(),
+        'labels': [],
+        'mfa': false,
+        'targets': [],
+      });
       _isLoading = false;
       notifyListeners();
       return;
@@ -43,7 +45,6 @@ class AuthProvider extends ChangeNotifier {
     try {
       _user = await _appwrite.account.get();
     } catch (e) {
-      // If not logged in locally, check the Ecosystem Vault
       final inherited = await _ecosystem.getSession();
       if (inherited != null) {
         try {
@@ -70,10 +71,7 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
-
-      // Save to Ecosystem Vault for other apps to inherit
       await _ecosystem.saveSession(session.userId, session.secret);
-
       _user = await _appwrite.account.get();
       notifyListeners();
     } catch (e) {
@@ -84,11 +82,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     try {
       await _appwrite.account.deleteSession(sessionId: 'current');
-      await _ecosystem.clearSession(); // Also clear the vault
+      await _ecosystem.clearSession();
       _user = null;
       notifyListeners();
     } catch (e) {
-      // Even if it fails, we clear local state
       await _ecosystem.clearSession();
       _user = null;
       notifyListeners();
