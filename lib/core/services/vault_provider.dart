@@ -4,6 +4,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cryptography/cryptography.dart';
 import 'encryption_service.dart';
+import '../constants/app_constants.dart';
 
 class VaultProvider with ChangeNotifier {
   static final VaultProvider _instance = VaultProvider._internal();
@@ -23,6 +24,18 @@ class VaultProvider with ChangeNotifier {
   bool get hasSessionKey => _sessionKey != null;
 
   Future<void> checkInitialization() async {
+    if (AppConstants.useMockMode) {
+      _isInitialized = true;
+      _isLocked = false;
+      // In mock mode, we don't need a real key, but if we want to avoid null checks failing:
+      // We can set a dummy key or modify encrypt/decrypt to bypass if mock mode.
+      // For now, let's leave key null and modify encrypt/decrypt/lock logic or just ensure we don't use it.
+      // Actually, VaultService uses encrypt/decrypt. We should bypass those there too.
+      // But let's set a dummy key to be safe if possible, or just let it be.
+      // Better: VaultService checks mock mode and returns plain text.
+      notifyListeners();
+      return;
+    }
     final masterHash = await _secureStorage.read(key: 'master_password_hash');
     _isInitialized = masterHash != null;
     notifyListeners();
