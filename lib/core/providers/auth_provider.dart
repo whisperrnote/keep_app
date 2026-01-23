@@ -15,10 +15,6 @@ class AuthProvider extends ChangeNotifier {
   models.User? get user => _user;
 
   AuthProvider() {
-    init();
-  }
-
-  Future<void> init() async {
     if (AppConstants.useMockMode) {
       _user = models.User.fromMap({
         '\$id': 'mock_user',
@@ -39,9 +35,12 @@ class AuthProvider extends ChangeNotifier {
         'targets': [],
       });
       _isLoading = false;
-      notifyListeners();
-      return;
+    } else {
+      init();
     }
+  }
+
+  Future<void> init() async {
     try {
       _user = await _appwrite.account.get();
     } catch (e) {
