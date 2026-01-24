@@ -7,6 +7,7 @@ class AppwriteConstants {
   static const String usersCollectionId = '67ff05c900247b5673d3';
   static const String credentialsCollectionId =
       '67ff05f3002502ef239e'; // Linked to Credentials in Keep
+  static const String totpSecretsCollectionId = '67ff30bd003669bd9603';
   static const String categoriesCollectionId = 'categories';
   static const String securityAuditCollectionId = 'securityAudit';
   static const String commentsCollectionId = 'comments';

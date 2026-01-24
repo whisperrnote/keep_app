@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import '../constants/appwrite_constants.dart';
 import 'appwrite_service.dart';
 import '../models/credential_model.dart';
+import '../models/totp_model.dart';
 import 'vault_provider.dart';
 import '../constants/app_constants.dart';
 
@@ -42,6 +43,7 @@ class VaultService {
       if (!_vaultProvider.isLocked) {
         for (var cred in credentials) {
           try {
+            cred.username = await _vaultProvider.decryptData(cred.username);
             cred.password = await _vaultProvider.decryptData(cred.password);
             if (cred.totpSecret != null) {
               cred.totpSecret = await _vaultProvider.decryptData(
@@ -72,6 +74,7 @@ class VaultService {
   }) async {
     try {
       // Encrypt sensitive fields
+      final encryptedUsername = await _vaultProvider.encryptData(username);
       final encryptedPassword = await _vaultProvider.encryptData(password);
       String? encryptedTotpSecret;
       if (totpSecret != null && totpSecret.isNotEmpty) {
@@ -84,7 +87,7 @@ class VaultService {
         documentId: ID.unique(),
         data: {
           'title': title,
-          'username': username,
+          'username': encryptedUsername,
           'password': encryptedPassword,
           'url': url,
           'notes': notes,
@@ -101,10 +104,53 @@ class VaultService {
         ],
       );
       final credential = Credential.fromJson(doc.data);
-      credential.password = password; // Return decrypted
+      credential.username = username;
+      credential.password = password; 
       return credential;
     } catch (e) {
       throw Exception('Failed to create credential: $e');
+    }
+  }
+
+  Future<List<TotpItem>> listTotpSecrets(String userId) async {
+    try {
+      final response = await _databases.listDocuments(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.totpSecretsCollectionId,
+        queries: [
+          Query.equal('userId', userId),
+          Query.orderDesc('\$createdAt'),
+        ],
+      );
+
+      final items = response.documents
+          .map((doc) => TotpItem.fromJson(doc.data))
+          .toList();
+
+      if (!_vaultProvider.isLocked) {
+        for (var item in items) {
+          try {
+            item.secretKey = await _vaultProvider.decryptData(item.secretKey);
+          } catch (e) {
+            item.secretKey = '[LOCKED]';
+          }
+        }
+      }
+      return items;
+    } catch (e) {
+      throw Exception('Failed to list TOTP secrets: $e');
+    }
+  }
+
+  Future<void> deleteTotpSecret(String id) async {
+    try {
+      await _databases.deleteDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.totpSecretsCollectionId,
+        documentId: id,
+      );
+    } catch (e) {
+      throw Exception('Failed to delete TOTP secret: $e');
     }
   }
 
