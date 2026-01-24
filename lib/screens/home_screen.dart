@@ -8,6 +8,7 @@ import '../widgets/bottom_nav.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/sidebar.dart';
 import 'vault_dashboard_screen.dart';
+import 'totp_screen.dart';
 import 'settings_screen.dart';
 import 'create_credential_screen.dart';
 import '../core/theme/glass_route.dart';
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const VaultDashboardScreen(),
     const _PlaceholderScreen(title: 'Payment Cards', icon: LucideIcons.creditCard),
-    const _PlaceholderScreen(title: 'Identities', icon: LucideIcons.user),
+    const TotpScreen(),
     const _PlaceholderScreen(title: 'Trash', icon: LucideIcons.trash2),
   ];
 
