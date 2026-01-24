@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -54,19 +53,21 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
     final vaultProvider = Provider.of<VaultProvider>(context, listen: false);
 
     if (authProvider.user != null) {
-      setState(() => _isLoading = true);
+      if (mounted) setState(() => _isLoading = true);
       try {
         final credentials = await _vaultService.listCredentials(
           authProvider.user!.$id,
         );
         final manager = AutofillManager();
-        setState(() {
-          _credentials = credentials;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _credentials = credentials;
+            _isLoading = false;
+          });
+        }
         manager.updateCredentials(credentials);
       } catch (e) {
-        setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -91,238 +92,113 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.voidBg,
-      body: Stack(
-        children: [
-          // Background Gradient
-          Positioned(
-            top: -150,
-            left: -150,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.electric.withOpacity(0.05),
-                    Colors.transparent,
-                  ],
-                ),
+    return Stack(
+      children: [
+        // Background Gradient
+        Positioned(
+          top: -150,
+          left: -150,
+          child: Container(
+            width: 400,
+            height: 400,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.electric.withOpacity(0.05),
+                  Colors.transparent,
+                ],
               ),
             ),
           ),
+        ),
 
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        RefreshIndicator(
+          onRefresh: _fetchCredentials,
+          color: AppColors.electric,
+          backgroundColor: AppColors.surface,
+          child: ListView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
               children: [
-                // Header
-                GlassCard(
-                  borderRadius: BorderRadius.zero,
-                  opacity: 0.8,
-                  border: const Border(
-                    bottom: BorderSide(color: AppColors.borderSubtle),
-                  ),
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                // Search Bar
+                _buildSearchBar(
+                  onAutofillTap: () => AutofillManager().openOverlay(),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Folders Filter
+                _buildPasswordHealthCard(),
+
+                const SizedBox(height: 24),
+
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'VAULT',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.electric,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Digital Identity',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.titanium,
-                              height: 1.0,
-                            ),
-                          ),
-                        ],
+                      _buildFolderChip('All', _selectedFolder == 'All'),
+                      _buildFolderChip(
+                        'Finance',
+                        _selectedFolder == 'Finance',
                       ),
-                      Row(
-                        children: [
-                          if (widget.isDesktop) ...[
-                            _DesktopHeaderAction(LucideIcons.plus, () async {
-                              await Navigator.push(
-                                context,
-                                GlassRoute(
-                                  page: const CreateCredentialScreen(),
-                                ),
-                              );
-                              _fetchCredentials();
-                            }, isPrimary: true),
-                            const SizedBox(width: 8),
-                          ],
-                          Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.surface2,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.borderSubtle),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  GlassRoute(
-                                    page: const PasswordGeneratorScreen(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(
-                                LucideIcons.shieldAlert,
-                                color: AppColors.electric,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                GlassRoute(page: const SettingsScreen()),
-                              );
-                            },
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: AppColors.electric,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: AppColors.voidBg,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  authProvider.user?.name
-                                          .substring(0, 1)
-                                          .toUpperCase() ??
-                                      'U',
-                                  style: GoogleFonts.spaceGrotesk(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.voidBg,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      _buildFolderChip(
+                        'Social',
+                        _selectedFolder == 'Social',
+                      ),
+                      _buildFolderChip(
+                        'Work',
+                        _selectedFolder == 'Work',
+                      ),
+                      _buildFolderChip(
+                        'Keys',
+                        _selectedFolder == 'Keys',
                       ),
                     ],
                   ),
                 ),
 
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _fetchCredentials,
-                    color: AppColors.electric,
-                    backgroundColor: AppColors.surface,
-                    child: ListView(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 24,
-                        ),
-                        children: [
-                          // Search Bar
-                          _buildSearchBar(
-                            onAutofillTap: () => AutofillManager().openOverlay(),
-                          ),
+                const SizedBox(height: 32),
 
-                          const SizedBox(height: 24),
-
-                          // Folders Filter
-                          _buildPasswordHealthCard(),
-
-                          const SizedBox(height: 24),
-
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                _buildFolderChip('All', _selectedFolder == 'All'),
-                                _buildFolderChip(
-                                  'Finance',
-                                  _selectedFolder == 'Finance',
-                                ),
-                                _buildFolderChip(
-                                  'Social',
-                                  _selectedFolder == 'Social',
-                                ),
-                                _buildFolderChip(
-                                  'Work',
-                                  _selectedFolder == 'Work',
-                                ),
-                                _buildFolderChip(
-                                  'Keys',
-                                  _selectedFolder == 'Keys',
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          if (_isLoading)
-                            const Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.electric,
-                              ),
-                            )
-                          else if (_filteredCredentials.isEmpty)
-                            Center(
-                              child: Column(
-                                children: [
-                                  const Icon(
-                                    LucideIcons.shieldOff,
-                                    size: 48,
-                                    color: AppColors.gunmetal,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No credentials found.',
-                                    style: GoogleFonts.inter(
-                                      color: AppColors.gunmetal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          else if (widget.isDesktop)
-                            _buildDesktopCredentialsGrid()
-                          else ...[
-                            _buildSectionTitle('ALL CREDENTIALS'),
-                            const SizedBox(height: 16),
-                            ..._filteredCredentials.map(
-                              (c) => _buildCredentialItem(credential: c),
-                            ),
-                          ],
-                        ],
+                if (_isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.electric,
                     ),
+                  )
+                else if (_filteredCredentials.isEmpty)
+                  Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 48),
+                        const Icon(
+                          LucideIcons.shieldOff,
+                          size: 48,
+                          color: AppColors.gunmetal,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No credentials found.',
+                          style: GoogleFonts.inter(
+                            color: AppColors.gunmetal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else if (widget.isDesktop)
+                  _buildDesktopCredentialsGrid()
+                else ...[
+                  _buildSectionTitle('ALL CREDENTIALS'),
+                  const SizedBox(height: 16),
+                  ..._filteredCredentials.map(
+                    (c) => _buildCredentialItem(credential: c),
                   ),
-                ),
+                ],
               ],
-            ),
           ),
-          const AutofillOverlay(),
-        ],
-      ),
-      floatingActionButton: widget.isDesktop ? null : _buildMobileFAB(),
+        ),
+        const AutofillOverlay(),
+      ],
     );
   }
 
@@ -473,20 +349,6 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
     );
   }
 
-  Widget _buildMobileFAB() {
-    return FloatingActionButton(
-      onPressed: () async {
-        await Navigator.push(
-          context,
-          GlassRoute(page: const CreateCredentialScreen()),
-        );
-        _fetchCredentials();
-      },
-      backgroundColor: AppColors.electric,
-      child: const Icon(LucideIcons.plus, color: AppColors.voidBg),
-    );
-  }
-
   Widget _buildFolderChip(String label, bool isSelected) {
     return Container(
       margin: const EdgeInsets.only(right: 12),
@@ -611,37 +473,6 @@ class _VaultDashboardScreenState extends State<VaultDashboardScreen> {
             ],
           ),
         ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.05, end: 0),
-      ),
-    );
-  }
-}
-
-class _DesktopHeaderAction extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool isPrimary;
-
-  const _DesktopHeaderAction(this.icon, this.onTap, {this.isPrimary = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: isPrimary ? AppColors.electric : AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isPrimary ? AppColors.electric : AppColors.borderSubtle,
-          ),
-        ),
-        child: Icon(
-          icon,
-          size: 16,
-          color: isPrimary ? AppColors.voidBg : AppColors.electric,
-        ),
       ),
     );
   }
